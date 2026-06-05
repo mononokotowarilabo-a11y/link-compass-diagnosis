@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINKコンパス診断</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      background: linear-gradient(180deg, #fff8ee 0%, #f6f2ea 100%);
+      color: #303030;
+    }
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 16px 14px 36px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      background: #fff;
+      border: 1px solid #eadfce;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .card {
+      background: rgba(255,255,255,.95);
+      border: 1px solid #eadfce;
+      border-radius: 24px;
+      box-shadow: 0 14px 30px rgba(70,45,20,.12);
+      padding: 22px 18px;
+    }
+    .hero { text-align: center; padding-top: 32px; }
+    .hero-icon {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 16px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      background: linear-gradient(135deg, #ffe98a, #88d0d8);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.25;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 21px;
+      line-height: 1.45;
+    }
+    p {
+      margin: 0 0 12px;
+      line-height: 1.8;
+      font-size: 14.5px;
+    }
+    .lead { color: #666; font-size: 14px; }
+    .note {
+      text-align: left;
+      background: #fff8d7;
+      border: 1px solid #f1dfa2;
+      color: #6a5520;
+      border-radius: 16px;
+      padding: 12px;
+      margin: 16px 0;
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+    label.input-label {
+      display: block;
+      margin: 14px 0 6px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: left;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      border: 1px solid #eadfce;
+      border-radius: 15px;
+      padding: 12px;
+      font-size: 15px;
+      background: #fff;
+      outline: none;
+    }
+    textarea {
+      min-height: 78px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 15px 14px;
+      font-size: 15.5px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #f2a7ba, #88d0d8);
+      box-shadow: 0 10px 22px rgba(136,208,216,.28);
+    }
+    .btn-secondary {
+      color: #333;
+      background: #fff;
+      border: 1px solid #eadfce;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-row .btn { flex: 1; }
+    .progress-wrap { margin: 8px 0 15px; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #777;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+    .progress {
+      height: 9px;
+      background: #fff;
+      border: 1px solid #eadfce;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f2a7ba, #88d0d8);
+      transition: width .2s;
+    }
+    .q-category {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #effbfc;
+      border: 1px solid #ccecf0;
+      color: #34777f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fff;
+      border: 1.5px solid #eadfce;
+      border-radius: 16px;
+      padding: 13px;
+      cursor: pointer;
+    }
+    .option.checked {
+      border-color: #88d0d8;
+      background: #f2fcfd;
+    }
+    .option input {
+      margin-top: 4px;
+      transform: scale(1.15);
+      accent-color: #67bbc4;
+    }
+    .option-title {
+      font-size: 14.5px;
+      line-height: 1.55;
+      font-weight: 750;
+    }
+    .other-box {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed #eadfce;
+    }
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fff0f0;
+      border: 1px solid #ffd2d2;
+      color: #b44848;
+      font-size: 12.5px;
+    }
+    .result-card {
+      background: #fff;
+      border: 1px solid #eadfce;
+      border-radius: 28px;
+      box-shadow: 0 14px 30px rgba(70,45,20,.12);
+      padding: 20px 17px;
+    }
+    .result-header {
+      text-align: center;
+      padding: 10px 4px 18px;
+      border-bottom: 1px dashed #eadfce;
+    }
+    .result-emoji { font-size: 54px; }
+    .result-title {
+      font-size: 24px;
+      font-weight: 950;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
+    .result-subtitle {
+      font-size: 13px;
+      color: #777;
+      margin-top: 6px;
+    }
+    .section {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 18px;
+      background: #fffaf4;
+      border: 1px solid #eadfce;
+    }
+    .section-title {
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 950;
+    }
+    .summary-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #eadfce;
+      font-size: 13px;
+    }
+    .summary-item span:first-child {
+      color: #777;
+      white-space: nowrap;
+    }
+    .summary-item span:last-child {
+      text-align: right;
+      font-weight: 850;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 9px;
+    }
+    .chip {
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #effbfc;
+      border: 1px solid #d7eef1;
+      color: #376d72;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .list-text {
+      font-size: 12.5px;
+      color: #555;
+      line-height: 1.75;
+      margin-top: 8px;
+    }
+    .free-item {
+      background: #fff;
+      border: 1px solid #eadfce;
+      border-radius: 14px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+    .free-q {
+      font-size: 11.5px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+    .free-a {
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .screen-note {
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.7;
+      margin: 10px 4px 14px;
+    }
+    .copy-area {
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div>🧭 LINKコンパス診断</div>
+      <div class="tag">スマホ版</div>
+    </div>
+
+    <section id="startScreen" class="screen active">
+      <div class="card hero">
+        <div class="hero-icon">🧭</div>
+        <h1>LINK<br>コンパス診断</h1>
+        <p class="lead">今のあなたの現在地と、コミュニティーを活用するヒントが見つかる診断です。</p>
+        <div class="note">
+          複数選択OK。各質問に「その他・自由記述」もあります。<br>
+          入力内容は外部送信されません。結果画面をスクショして使えます。
+        </div>
+
+        <label class="input-label" for="userName">お名前・ニックネーム（任意）</label>
+        <input id="userName" type="text" placeholder="例：あやこ">
+
+        <label class="input-label" for="activityName">事業名・活動名（任意）</label>
+        <input id="activityName" type="text" placeholder="例：もののことわり研究室">
+
+        <button id="startBtn" class="btn btn-primary" style="margin-top:18px;">診断をはじめる</button>
+      </div>
+    </section>
+
+    <section id="questionScreen" class="screen">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="progressText"></span>
+          <span>複数選択OK</span>
+        </div>
+        <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
+      </div>
+
+      <div class="card">
+        <div id="qCategory" class="q-category"></div>
+        <h2 id="qTitle"></h2>
+        <p id="qHelp" class="lead"></p>
+        <div id="options" class="options"></div>
+
+        <div class="other-box">
+          <label class="input-label" for="otherText">その他・補足があれば自由にどうぞ</label>
+          <textarea id="otherText" placeholder="例：初対面は苦手だけど、テーマが合えば話せます"></textarea>
+        </div>
+
+        <div id="errorBox" class="error">選択肢を1つ以上選ぶか、自由記述を入力してください。</div>
+
+        <div class="btn-row">
+          <button id="backBtn" class="btn btn-secondary">戻る</button>
+          <button id="nextBtn" class="btn btn-primary">次へ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="finalScreen" class="screen">
+      <div class="card">
+        <h2>最後に、今の状況をひとこと</h2>
+        <p class="lead">ここに書いた内容も診断結果カードに反映されます。スクショで共有したい内容だけ入力してください。</p>
+
+        <label class="input-label" for="finalFreeText">今困っていること・相談したいこと・運営に伝えたいこと（任意）</label>
+        <textarea id="finalFreeText" placeholder="例：集客を始めたいけど、自己紹介文がまだまとまっていません"></textarea>
+
+        <div class="btn-row">
+          <button id="finalBackBtn" class="btn btn-secondary">戻る</button>
+          <button id="resultBtn" class="btn btn-primary">結果を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <p class="screen-note">この画面をスクショして共有できます。下のボタンでテキストコピーもできます。</p>
+      <div id="resultCard" class="result-card"></div>
+
+      <div class="btn-row">
+        <button id="copyBtn" class="btn btn-secondary">結果テキストをコピー</button>
+        <button id="restartBtn" class="btn btn-primary">もう一度</button>
+      </div>
+      <textarea id="copyArea" class="copy-area"></textarea>
+    </section>
+  </main>
+
+<script>
+(function() {
+  const questions = [
+    q("交流スタイル", "初めて参加するイベントでは？", "自分に近いものを選んでください。複数選択OKです。", [
+      o("気になる人がいたら自分から話しかける", { interaction:"積極", stage:"広げる" }),
+      o("誰かに紹介してもらえると安心", { interaction:"慎重", referral:"慎重" }),
+      o("まずは様子を見たい", { interaction:"慎重", stage:"発見" }),
+      o("少人数なら話しやすい", { interaction:"バランス", purpose:"仲間づくり" })
+    ]),
+    q("紹介・推薦", "良いサービスや人に出会ったら？", "紹介や口コミへの抵抗感を見ます。", [
+      o("すぐ紹介したくなる", { referral:"得意", stage:"つなげる" }),
+      o("仲の良い人になら紹介できる", { referral:"慎重", interaction:"バランス" }),
+      o("良いと思っても紹介は苦手", { referral:"苦手", interaction:"慎重" }),
+      o("SNSなら紹介しやすい", { referral:"慎重", digital:"普通" })
+    ]),
+    q("現在地", "今のあなたに一番近いのは？", "今どんな時期にいるかを見ます。", [
+      o("やりたいことを探している", { stage:"発見", businessStage:"模索中" }),
+      o("やりたいことを形にしたい", { stage:"形づくる", businessStage:"準備中" }),
+      o("集客や売上を伸ばしたい", { stage:"広げる", purpose:"集客" }),
+      o("人を応援したりつなげたい", { stage:"つなげる", purpose:"人脈" })
+    ]),
+    q("目的", "LINKに期待していることは？", "今の目的を見ます。", [
+      o("学び", { purpose:"学び" }),
+      o("人脈づくり", { purpose:"人脈" }),
+      o("集客", { purpose:"集客" }),
+      o("仲間づくり", { purpose:"仲間づくり" })
+    ]),
+    q("参加スタイル", "イベント参加は？", "参加しやすい場の規模を見ます。", [
+      o("大人数でも平気", { interaction:"積極" }),
+      o("少人数が安心", { interaction:"慎重" }),
+      o("内容次第", { interaction:"バランス" }),
+      o("知り合いがいると参加しやすい", { interaction:"慎重", purpose:"仲間づくり" })
+    ]),
+    q("情報処理", "新しい情報がたくさん届いた時は？", "情報量への反応を見ます。", [
+      o("ワクワクして全部見たい", { info:"文章", stage:"発見" }),
+      o("必要なものだけ選ぶ", { info:"文章", timeMargin:"普通" }),
+      o("少し疲れてしまう", { timeMargin:"少ない", info:"対話" }),
+      o("誰かに整理してほしい", { info:"対話", interaction:"慎重" })
+    ]),
+    q("学び方", "学ぶならどれが好き？", "情報の受け取り方を見ます。", [
+      o("読む", { info:"文章" }),
+      o("聞く", { info:"音声" }),
+      o("見る", { info:"ビジュアル" }),
+      o("話しながら学ぶ", { info:"対話" })
+    ]),
+    q("Zoom", "Zoomやオンラインイベントは？", "オンライン参加のしやすさを見ます。", [
+      o("慣れている", { zoom:"得意", digital:"得意" }),
+      o("基本操作はできる", { zoom:"基本操作OK", digital:"普通" }),
+      o("少し苦手", { zoom:"初心者", digital:"サポート必要" }),
+      o("かなり不安", { zoom:"初心者", digital:"サポート必要" })
+    ]),
+    q("AI", "AIについて一番近いのは？", "AIを使えるかだけでなく、学びたいかも見ます。", [
+      o("まだ使ったことがない", { ai:"未経験" }),
+      o("興味があり学んでみたい", { ai:"興味あり・学びたい", purpose:"学び" }),
+      o("少し使っている", { ai:"初級" }),
+      o("仕事に活用している", { ai:"ビジネス活用中", digital:"得意" })
+    ]),
+    q("活動状況", "今の活動状況は？", "ビジネスステージを見ます。", [
+      o("まず情報収集中", { businessStage:"模索中", stage:"発見" }),
+      o("起業準備中", { businessStage:"準備中", stage:"形づくる" }),
+      o("起業初期", { businessStage:"初期", stage:"広げる" }),
+      o("すでに事業運営中", { businessStage:"成長期", stage:"つなげる" })
+    ]),
+    q("立場", "あなたの立場は？", "現在の働き方や立場を見ます。", [
+      o("会社員", { businessStage:"模索中" }),
+      o("個人事業主", { businessStage:"初期" }),
+      o("経営者", { businessStage:"成長期" }),
+      o("主婦・主夫・その他", { businessStage:"準備中" })
+    ]),
+    q("時間", "今の時間の余裕は？", "動ける余白を見ます。", [
+      o("比較的余裕がある", { timeMargin:"多い" }),
+      o("調整すれば作れる", { timeMargin:"普通" }),
+      o("忙しい", { timeMargin:"少ない" }),
+      o("とても忙しい", { timeMargin:"少ない" })
+    ]),
+    q("参加時間", "参加しやすい時間帯は？", "複数ある場合は全部選んでください。", [
+      o("平日日中", { activeTime:"平日日中" }),
+      o("平日夜", { activeTime:"平日夜" }),
+      o("土日昼", { activeTime:"土日昼" }),
+      o("土日夜", { activeTime:"土日夜" })
+    ]),
+    q("行動傾向", "何かを始める時は？", "行動の始め方を見ます。", [
+      o("とりあえずやってみる", { stage:"広げる", interaction:"積極" }),
+      o("調べてから動く", { stage:"発見", info:"文章" }),
+      o("誰かに相談する", { stage:"形づくる", info:"対話" }),
+      o("計画を立てる", { stage:"形づくる" })
+    ]),
+    q("嬉しいこと", "コミュニティーで嬉しいのは？", "どんな価値を受け取りたいかを見ます。", [
+      o("新しい出会い", { purpose:"人脈", interaction:"積極" }),
+      o("学び", { purpose:"学び" }),
+      o("仕事につながること", { purpose:"集客", stage:"広げる" }),
+      o("信頼できる仲間", { purpose:"仲間づくり", interaction:"バランス" })
+    ]),
+    q("相談方法", "困った時は？", "サポートの受け取り方を見ます。", [
+      o("自分で調べる", { info:"文章", digital:"普通" }),
+      o("詳しい人に聞く", { info:"対話", purpose:"学び" }),
+      o("仲間に相談する", { purpose:"仲間づくり", interaction:"バランス" }),
+      o("個別相談を利用する", { stage:"形づくる", interaction:"慎重" })
+    ]),
+    q("叶えたいこと", "今、一番叶えたいことは？", "今の優先テーマを見ます。", [
+      o("自分の方向性を見つけたい", { stage:"発見", purpose:"学び" }),
+      o("商品やサービスを整えたい", { stage:"形づくる", purpose:"学び" }),
+      o("集客や売上を伸ばしたい", { stage:"広げる", purpose:"集客" }),
+      o("人とのつながりを広げたい", { stage:"つなげる", purpose:"人脈" })
+    ]),
+    q("未来像", "1年後どうなっていたら嬉しい？", "目指したい未来を見ます。", [
+      o("やりたいことが明確になっている", { stage:"発見" }),
+      o("仕事として形になっている", { stage:"形づくる" }),
+      o("安定して収益化できている", { stage:"広げる", purpose:"集客" }),
+      o("信頼できる仲間に囲まれている", { stage:"つなげる", purpose:"仲間づくり" })
+    ])
+  ];
+
+  function q(category, title, help, options) {
+    return { category, title, help, options };
+  }
+  function o(text, score) {
+    return { text, score };
+  }
+
+  const orders = {
+    stage: ["広げる", "形づくる", "発見", "つなげる"],
+    purpose: ["集客", "人脈", "学び", "仲間づくり"],
+    interaction: ["慎重", "バランス", "積極"],
+    referral: ["苦手", "慎重", "得意"],
+    info: ["文章", "音声", "ビジュアル", "対話"],
+    zoom: ["初心者", "基本操作OK", "得意"],
+    ai: ["未経験", "興味あり・学びたい", "初級", "ビジネス活用中"],
+    digital: ["サポート必要", "普通", "得意"],
+    timeMargin: ["少ない", "普通", "多い"],
+    businessStage: ["模索中", "準備中", "初期", "成長期"],
+    activeTime: ["平日日中", "平日夜", "土日昼", "土日夜"]
+  };
+
+  const stageContent = {
+    "発見": {
+      emoji: "🌱",
+      title: "発見の時期",
+      body: "今は「やりたいこと」や「自分らしい方向性」を探している時期です。色々な人の話を聞いたり、新しい体験をすることで、自分の可能性が広がっていきます。まだ答えが見えていなくても大丈夫。今は探すこと自体が大切な時間です。",
+      step: "まずは興味のあるイベントや交流会に参加してみましょう。「ちょっと気になる」を大切にしながら、自分の可能性を広げていきましょう。"
+    },
+    "形づくる": {
+      emoji: "🛠",
+      title: "形づくる時期",
+      body: "今はアイデアや想いを少しずつ形にしていく時期です。やりたいことは見えてきたけれど、どう進めるか、何から始めるかを整理している段階かもしれません。",
+      step: "一人で考え続けるより、誰かに話してみることで整理が進みます。壁打ちや相談を活用しながら、小さく試していきましょう。"
+    },
+    "広げる": {
+      emoji: "🚀",
+      title: "広げる時期",
+      body: "今は行動量が成果につながりやすい時期です。まずはSASAEAIマッチングサイトへの事業掲載をサクッと済ませて、あなたの活動を周りに知ってもらいましょう。そして、コミュニティーの交流会やイベントに積極的に参加し、人とのつながりを広げていくことがおすすめです。",
+      step: "自己紹介やスピーチも、完璧を目指す必要はありません。「まずは伝えてみる」ことが、新しいご縁やチャンスにつながります。"
+    },
+    "つなげる": {
+      emoji: "🌟",
+      title: "つなげる時期",
+      body: "今は人と人をつなぎ、価値や可能性を広げていく時期です。あなたが出会った人やサービス、アイデアの中で「これは良いな」と感じたものを、ぜひ周りの人にも紹介してみてください。",
+      step: "一人ひとりのつながりが重なり合うことで、新しいコラボやビジネスの機会が生まれていきます。あなた自身が橋渡し役になることで、大きなシナジーが生まれるでしょう。"
+    }
+  };
+
+  let current = 0;
+  let answers = {};
+  let resultText = "";
+
+  const startScreen = document.getElementById("startScreen");
+  const questionScreen = document.getElementById("questionScreen");
+  const finalScreen = document.getElementById("finalScreen");
+  const resultScreen = document.getElementById("resultScreen");
+
+  document.getElementById("startBtn").addEventListener("click", start);
+  document.getElementById("backBtn").addEventListener("click", prev);
+  document.getElementById("nextBtn").addEventListener("click", next);
+  document.getElementById("finalBackBtn").addEventListener("click", backToQuestion);
+  document.getElementById("resultBtn").addEventListener("click", showResult);
+  document.getElementById("copyBtn").addEventListener("click", copyResult);
+  document.getElementById("restartBtn").addEventListener("click", restart);
+
+  function show(screen) {
+    [startScreen, questionScreen, finalScreen, resultScreen].forEach(s => s.classList.remove("active"));
+    screen.classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function start() {
+    show(questionScreen);
+    render();
+  }
+
+  function render() {
+    const item = questions[current];
+    document.getElementById("qCategory").textContent = item.category;
+    document.getElementById("qTitle").textContent = item.title;
+    document.getElementById("qHelp").textContent = item.help;
+    document.getElementById("progressText").textContent = (current + 1) + " / " + questions.length;
+    document.getElementById("progressFill").style.width = ((current + 1) / questions.length * 100) + "%";
+    document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "最後の入力へ" : "次へ";
+    document.getElementById("errorBox").style.display = "none";
+
+    const saved = answers[current] || { selected: [], other: "" };
+    const box = document.getElementById("options");
+    box.innerHTML = "";
+
+    item.options.forEach((opt, idx) => {
+      const id = "q" + current + "_o" + idx;
+      const checked = saved.selected.includes(idx);
+      const label = document.createElement("label");
+      label.className = "option" + (checked ? " checked" : "");
+      label.htmlFor = id;
+      label.innerHTML = '<input type="checkbox" id="' + id + '"' + (checked ? " checked" : "") + '><div class="option-title">' + esc(opt.text) + '</div>';
+      box.appendChild(label);
+      const input = label.querySelector("input");
+      input.addEventListener("change", function() {
+        label.classList.toggle("checked", input.checked);
+      });
+    });
+
+    document.getElementById("otherText").value = saved.other || "";
+  }
+
+  function saveAnswer() {
+    const selected = [];
+    questions[current].options.forEach((_, idx) => {
+      const el = document.getElementById("q" + current + "_o" + idx);
+      if (el && el.checked) selected.push(idx);
+    });
+    const other = document.getElementById("otherText").value.trim();
+    answers[current] = { selected, other };
+    return selected.length > 0 || other.length > 0;
+  }
+
+  function next() {
+    if (!saveAnswer()) {
+      document.getElementById("errorBox").style.display = "block";
+      return;
+    }
+    if (current < questions.length - 1) {
+      current++;
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      show(finalScreen);
+    }
+  }
+
+  function prev() {
+    saveAnswer();
+    if (current > 0) {
+      current--;
+      render();
+    } else {
+      show(startScreen);
+    }
+  }
+
+  function backToQuestion() {
+    show(questionScreen);
+    render();
+  }
+
+  function blankScores() {
+    const scores = {};
+    Object.keys(orders).forEach(group => {
+      scores[group] = {};
+      orders[group].forEach(key => scores[group][key] = 0);
+    });
+    return scores;
+  }
+
+  function add(scores, group, key) {
+    if (!scores[group]) scores[group] = {};
+    if (!scores[group][key]) scores[group][key] = 0;
+    scores[group][key]++;
+  }
+
+  function calculate() {
+    const scores = blankScores();
+    const selectedRecords = [];
+    const freeRecords = [];
+
+    questions.forEach((item, qIndex) => {
+      const ans = answers[qIndex] || { selected: [], other: "" };
+      ans.selected.forEach(idx => {
+        const opt = item.options[idx];
+        if (!opt) return;
+        selectedRecords.push({ question: item.title, answer: opt.text });
+        Object.keys(opt.score).forEach(group => add(scores, group, opt.score[group]));
+      });
+      if (ans.other) freeRecords.push({ question: item.title, text: ans.other });
+    });
+
+    return { scores, selectedRecords, freeRecords };
+  }
+
+  function top(scores, group, limit) {
+    const arr = Object.keys(scores[group] || {}).map(key => [key, scores[group][key]]);
+    const order = orders[group] || [];
+    arr.sort((a,b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return order.indexOf(a[0]) - order.indexOf(b[0]);
+    });
+    return arr.filter(x => x[1] > 0).slice(0, limit).map(x => x[0]);
+  }
+
+  function primary(scores, group, fallback) {
+    const t = top(scores, group, 1);
+    return t[0] || fallback;
+  }
+
+  function showResult() {
+    const calc = calculate();
+    const scores = calc.scores;
+    const selectedRecords = calc.selectedRecords;
+    const freeRecords = calc.freeRecords;
+
+    const stage = primary(scores, "stage", "発見");
+    const content = stageContent[stage];
+
+    const purposeList = top(scores, "purpose", 2);
+    const timeList = top(scores, "activeTime", 4);
+
+    const result = {
+      purpose: purposeList.length ? purposeList.join("・") : "未判定",
+      interaction: primary(scores, "interaction", "バランス"),
+      referral: primary(scores, "referral", "慎重"),
+      info: primary(scores, "info", "対話"),
+      zoom: primary(scores, "zoom", "未判定"),
+      ai: primary(scores, "ai", "未判定"),
+      digital: primary(scores, "digital", "普通"),
+      timeMargin: primary(scores, "timeMargin", "普通"),
+      businessStage: primary(scores, "businessStage", "未判定"),
+      activeTime: timeList.length ? timeList.join("・") : "未判定"
+    };
+
+    const finalText = document.getElementById("finalFreeText").value.trim();
+    if (finalText) {
+      freeRecords.push({ question: "今困っていること・相談したいこと", text: finalText });
+    }
+
+    const name = document.getElementById("userName").value.trim();
+    const activity = document.getElementById("activityName").value.trim();
+
+    const advices = makeAdvices(result);
+    const resultCard = document.getElementById("resultCard");
+
+    resultCard.innerHTML =
+      '<div class="result-header">' +
+        '<div class="result-emoji">' + content.emoji + '</div>' +
+        '<div class="result-title">あなたは今、<br>' + esc(content.title) + 'です</div>' +
+        '<div class="result-subtitle">' + esc(name ? name + "さん" : "診断結果") + (activity ? "｜" + esc(activity) : "") + '</div>' +
+      '</div>' +
+      section("🧭 今のあなたの現在地", '<p>' + esc(content.body) + '</p><p><strong>おすすめの一歩：</strong><br>' + esc(content.step) + '</p>') +
+      section("📋 LINKコンパスカルテ",
+        '<div class="summary-grid">' +
+        item("今の目的", result.purpose) +
+        item("参加スタイル", result.interaction) +
+        item("紹介・交流", result.referral) +
+        item("情報の受け取り方", result.info) +
+        item("Zoom活用度", result.zoom) +
+        item("AIとの関わり方", result.ai) +
+        item("デジタル活用度", result.digital) +
+        item("時間の余裕", result.timeMargin) +
+        item("ビジネスステージ", result.businessStage) +
+        item("活動しやすい時間帯", result.activeTime) +
+        '</div>'
+      ) +
+      section("✨ あなたに合いそうな活用ヒント",
+        '<div class="chips">' +
+        purposeList.map(x => '<span class="chip">' + esc(x) + '</span>').join("") +
+        timeList.map(x => '<span class="chip">' + esc(x) + '</span>').join("") +
+        '<span class="chip">' + esc(result.info) + '型</span>' +
+        '<span class="chip">' + esc(result.ai) + '</span>' +
+        '</div><div class="list-text">' + advices.map(x => "・" + esc(x)).join("<br>") + '</div>'
+      ) +
+      section("✅ 複数選択から見えたポイント",
+        '<div class="list-text">' + selectedSummary(selectedRecords) + '</div>'
+      ) +
+      (freeRecords.length ? section("📝 自由記述メモ", freeRecords.map(r =>
+        '<div class="free-item"><div class="free-q">' + esc(r.question) + '</div><div class="free-a">' + esc(r.text) + '</div></div>'
+      ).join("")) : "") +
+      section("🔒 メモ", '<p style="font-size:12.5px;color:#666;">この診断結果は外部送信されません。共有したい場合は、この画面をスクリーンショットしてください。</p>');
+
+    resultText = buildText(content, result, advices, freeRecords, name, activity);
+    show(resultScreen);
+  }
+
+  function makeAdvices(result) {
+    const advices = [];
+    if (result.interaction === "慎重") advices.push("交流は少人数や紹介つきの場から始めると安心です。");
+    if (result.interaction === "積極") advices.push("交流会や自己紹介の場で、積極的に活動を伝えるとチャンスが広がりやすいです。");
+    if (result.ai === "興味あり・学びたい" || result.ai === "未経験") advices.push("AIは初心者向けの勉強会や、実際に触ってみる体験型の場が合いそうです。");
+    if (result.ai === "ビジネス活用中") advices.push("AI活用の経験をシェアすると、他のメンバーの助けにもなりそうです。");
+    if (result.zoom === "初心者") advices.push("Zoomに不安がある場合は、事前の操作確認や少人数のオンライン会から参加すると安心です。");
+    if (result.timeMargin === "少ない") advices.push("時間の余裕が少なめなので、まずは参加する企画を絞って、無理なく続けるのがおすすめです。");
+    if (result.referral === "得意") advices.push("良いと思ったものを紹介する力があるので、マッチングや紹介役としても活躍しやすいです。");
+    if (result.referral === "苦手") advices.push("紹介が苦手な場合は、まずは感想を一言伝えるところから始めると自然です。");
+    if (!advices.length) advices.push("まずは気になる企画に参加して、自分に合う関わり方を試してみましょう。");
+    return advices;
+  }
+
+  function section(title, body) {
+    return '<div class="section"><div class="section-title">' + esc(title) + '</div>' + body + '</div>';
+  }
+
+  function item(label, value) {
+    return '<div class="summary-item"><span>' + esc(label) + '</span><span>' + esc(value) + '</span></div>';
+  }
+
+  function selectedSummary(records) {
+    if (!records.length) return "選択項目はありません。";
+    const limit = 12;
+    let text = records.slice(0, limit).map(r => "・" + esc(r.answer)).join("<br>");
+    if (records.length > limit) text += "<br>・ほか " + (records.length - limit) + " 件";
+    return text;
+  }
+
+  function buildText(content, result, advices, freeRecords, name, activity) {
+    const lines = [];
+    lines.push("🧭 LINKコンパス診断 結果");
+    if (name) lines.push("お名前：" + name);
+    if (activity) lines.push("活動名：" + activity);
+    lines.push("");
+    lines.push("あなたは今、" + content.title + "です");
+    lines.push(content.body);
+    lines.push("");
+    lines.push("【LINKコンパスカルテ】");
+    lines.push("今の目的：" + result.purpose);
+    lines.push("参加スタイル：" + result.interaction);
+    lines.push("紹介・交流：" + result.referral);
+    lines.push("情報の受け取り方：" + result.info);
+    lines.push("Zoom活用度：" + result.zoom);
+    lines.push("AIとの関わり方：" + result.ai);
+    lines.push("デジタル活用度：" + result.digital);
+    lines.push("時間の余裕：" + result.timeMargin);
+    lines.push("ビジネスステージ：" + result.businessStage);
+    lines.push("活動しやすい時間帯：" + result.activeTime);
+    lines.push("");
+    lines.push("【おすすめの一歩】");
+    lines.push(content.step);
+    lines.push("");
+    lines.push("【活用ヒント】");
+    advices.forEach(a => lines.push("・" + a));
+    if (freeRecords.length) {
+      lines.push("");
+      lines.push("【自由記述メモ】");
+      freeRecords.forEach(r => {
+        lines.push("・" + r.question);
+        lines.push("　" + r.text);
+      });
+    }
+    return lines.join("\n");
+  }
+
+  function copyResult() {
+    const area = document.getElementById("copyArea");
+    area.value = resultText;
+    area.select();
+    area.setSelectionRange(0, 99999);
+    try {
+      document.execCommand("copy");
+      alert("結果テキストをコピーしました！");
+    } catch(e) {
+      alert("コピーできませんでした。画面を長押ししてコピーしてください。");
+    }
+  }
+
+  function restart() {
+    current = 0;
+    answers = {};
+    resultText = "";
+    document.getElementById("finalFreeText").value = "";
+    show(startScreen);
+  }
+
+  function esc(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+})();
+</script>
+</body>
+</html>
