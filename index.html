@@ -105,6 +105,16 @@
 
     .lead { color: #666; font-size: 14px; }
 
+    .hero-lead {
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.9;
+      font-weight: 700;
+      color: #5f5144;
+      margin: 12px 0 16px;
+    }
+
+
     .note {
       text-align: left;
       background: #fff8d7;
@@ -205,6 +215,35 @@
       background: #fff;
     }
 
+
+    .question-number {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin: 0 0 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff8d7;
+      border: 1px solid #f1dfa2;
+      color: #6a5520;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .multi-note {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #effbfc;
+      border: 1px solid #ccecf0;
+      color: #34777f;
+      font-size: 12.5px;
+      font-weight: 900;
+    }
+
     .q-category {
       display: inline-flex;
       align-items: center;
@@ -291,6 +330,13 @@
       display: block;
       margin-bottom: 14px;
       border: 1px solid #f0e5d8;
+    }
+
+
+    .result-main-img {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      max-height: 360px;
     }
 
     .result-header {
@@ -415,6 +461,11 @@
       white-space: pre-wrap;
     }
 
+
+    .q-help-hidden {
+      display: none !important;
+    }
+
     .screen-note {
       text-align: center;
       color: #777;
@@ -530,18 +581,10 @@
           <img class="mini-icon" src="images/03_cat.png" alt="">
           <img class="mini-icon" src="images/04_birds_pair.png" alt="">
         </div>
-        <h1>LINK<br>コンパス診断</h1>
-        <p class="lead">今のあなたの現在地と、コミュニティーを活用するヒントが見つかる診断です。</p>
-        <div class="note">
-          複数選択OK。各質問に「その他・自由記述」もあります。<br>
-          入力内容は外部送信されません。結果画面をスクショして使えます。
-        </div>
+        <p class="lead hero-lead">今のあなたの現在地と<br>コミュニティーを活用するヒントが<br>見つかる診断です✨</p>
 
-        <label class="input-label" for="userName">お名前・ニックネーム（任意）</label>
-        <input id="userName" type="text" placeholder="例：あやこ">
-
-        <label class="input-label" for="activityName">事業名・活動名（任意）</label>
-        <input id="activityName" type="text" placeholder="例：もののことわり研究室">
+        <label class="input-label" for="userName">お名前・ニックネーム</label>
+        <input id="userName" type="text" placeholder="">
 
         <button id="startBtn" class="btn btn-primary" style="margin-top:18px;">診断をはじめる</button>
       </div>
@@ -551,7 +594,7 @@
       <div class="progress-wrap">
         <div class="progress-meta">
           <span id="progressText"></span>
-          <span>複数選択OK</span>
+          <span></span>
         </div>
         <div class="progress"><div id="progressFill" class="progress-fill"></div></div>
       </div>
@@ -559,14 +602,16 @@
       <div class="card">
         <img id="questionVisual" class="question-visual" src="images/07_question_header_explore.png" alt="質問画面イラスト">
         <img class="floating-icon float-1" src="images/06_sparkle_and_stars.png" alt="">
+        <div id="questionNumber" class="question-number"></div>
         <div id="qCategory" class="q-category"></div>
         <h2 id="qTitle"></h2>
-        <p id="qHelp" class="lead"></p>
+        <div class="multi-note">複数選択OK！</div>
+        <p id="qHelp" class="lead q-help-hidden"></p>
         <div id="options" class="options"></div>
 
         <div class="other-box">
-          <label class="input-label" for="otherText">その他・補足があれば自由にどうぞ</label>
-          <textarea id="otherText" placeholder="例：初対面は苦手だけど、テーマが合えば話せます"></textarea>
+          <label class="input-label" for="otherText">その他・補足があればどうぞ</label>
+          <textarea id="otherText" placeholder=""></textarea>
         </div>
 
         <div id="errorBox" class="error">選択肢を1つ以上選ぶか、自由記述を入力してください。</div>
@@ -580,12 +625,13 @@
 
     <section id="finalScreen" class="screen">
       <div class="card">
+        <img class="question-visual" src="images/final_screen.png" alt="最後の一言画面">
         <img class="floating-icon float-1" src="images/08_checklist_and_heart.png" alt="">
         <h2>最後に、今の状況をひとこと</h2>
-        <p class="lead">ここに書いた内容も診断結果カードに反映されます。スクショで共有したい内容だけ入力してください。</p>
+        
 
         <label class="input-label" for="finalFreeText">今困っていること・相談したいこと・運営に伝えたいこと（任意）</label>
-        <textarea id="finalFreeText" placeholder="例：集客を始めたいけど、自己紹介文がまだまとまっていません"></textarea>
+        <textarea id="finalFreeText" placeholder=""></textarea>
 
         <div class="btn-row">
           <button id="finalBackBtn" class="btn btn-secondary">戻る</button>
@@ -616,9 +662,14 @@
     compass: "images/05_compass.png",
     sparkle: "images/06_sparkle_and_stars.png",
     question: "images/07_question_and_speech.png",
-    qHeader1: "images/07_question_header_explore.png",
+    qHeader1: "images/banner_qa.png",
+    qHeaderA: "images/banner_qa.png",
+    qHeaderB: "images/banner_qb.png",
+    qHeaderC: "images/banner_qc.png",
+    finalScreen: "images/final_screen.png",
+    questionImages: Array.from({ length: 18 }, (_, i) => `images/q${String(i + 1).padStart(2, "0")}.png`),
     checkHeart: "images/08_checklist_and_heart.png",
-    qHeader2: "images/08_question_banner_choices.png",
+    qHeader2: "images/banner_qb.png",
     laptopRobot: "images/09_laptop_and_robot.png",
     arrows: "images/10_arrows_set.png",
     resultHakken: "images/02_haken.png",
@@ -628,109 +679,109 @@
   };
 
   const questions = [
-    q("交流スタイル", "初めて参加するイベントでは？", "自分に近いものを選んでください。複数選択OKです。", IMG.question, [
-      o("気になる人がいたら自分から話しかける", { interaction:"積極", stage:"広げる" }),
+    q("交流スタイル", "初めて参加するイベントでは？", "今のあなたに近いものを選んでください。複数選択OKです。", IMG.question, [
+      o("誰かに話しかけてもらえると安心", { interaction:"積極", stage:"広げる" }),
       o("誰かに紹介してもらえると安心", { interaction:"慎重", referral:"慎重" }),
       o("まずは様子を見たい", { interaction:"慎重", stage:"発見" }),
       o("少人数なら話しやすい", { interaction:"バランス", purpose:"仲間づくり" })
     ]),
-    q("紹介・推薦", "良いサービスや人に出会ったら？", "紹介や口コミへの抵抗感を見ます。", IMG.arrows, [
+    q("紹介・推薦", "良いサービスや人に出会ったら？", "良いなと思った時の、あなたの自然な動き方を選んでください。", IMG.arrows, [
       o("すぐ紹介したくなる", { referral:"得意", stage:"つなげる" }),
       o("仲の良い人になら紹介できる", { referral:"慎重", interaction:"バランス" }),
       o("良いと思っても紹介は苦手", { referral:"苦手", interaction:"慎重" }),
       o("SNSなら紹介しやすい", { referral:"慎重", digital:"普通" })
     ]),
-    q("現在地", "今のあなたに一番近いのは？", "今どんな時期にいるかを見ます。", IMG.compass, [
+    q("現在地", "今のあなたに一番近いのは？", "今のあなたの状態に近いものを選んでください。", IMG.compass, [
       o("やりたいことを探している", { stage:"発見", businessStage:"模索中" }),
       o("やりたいことを形にしたい", { stage:"形づくる", businessStage:"準備中" }),
       o("集客や売上を伸ばしたい", { stage:"広げる", purpose:"集客" }),
       o("人を応援したりつなげたい", { stage:"つなげる", purpose:"人脈" })
     ]),
-    q("目的", "LINKに期待していることは？", "今の目的を見ます。", IMG.checkHeart, [
+    q("目的", "LINKに期待していることは？", "今、LINKで特に得たいものを選んでください。", IMG.checkHeart, [
       o("学び", { purpose:"学び" }),
       o("人脈づくり", { purpose:"人脈" }),
       o("集客", { purpose:"集客" }),
       o("仲間づくり", { purpose:"仲間づくり" })
     ]),
-    q("参加スタイル", "イベント参加は？", "参加しやすい場の規模を見ます。", IMG.birds, [
+    q("参加スタイル", "イベント参加は？", "参加しやすい雰囲気に近いものを選んでください。", IMG.birds, [
       o("大人数でも平気", { interaction:"積極" }),
       o("少人数が安心", { interaction:"慎重" }),
       o("内容次第", { interaction:"バランス" }),
       o("知り合いがいると参加しやすい", { interaction:"慎重", purpose:"仲間づくり" })
     ]),
-    q("情報処理", "新しい情報がたくさん届いた時は？", "情報量への反応を見ます。", IMG.question, [
+    q("情報処理", "新しい情報がたくさん届いた時は？", "情報が多い時の感じ方に近いものを選んでください。", IMG.question, [
       o("ワクワクして全部見たい", { info:"文章", stage:"発見" }),
       o("必要なものだけ選ぶ", { info:"文章", timeMargin:"普通" }),
       o("少し疲れてしまう", { timeMargin:"少ない", info:"対話" }),
       o("誰かに整理してほしい", { info:"対話", interaction:"慎重" })
     ]),
-    q("学び方", "学ぶならどれが好き？", "情報の受け取り方を見ます。", IMG.lion, [
+    q("学び方", "学ぶならどれが好き？", "学びやすい方法を選んでください。", IMG.lion, [
       o("読む", { info:"文章" }),
       o("聞く", { info:"音声" }),
       o("見る", { info:"ビジュアル" }),
       o("話しながら学ぶ", { info:"対話" })
     ]),
-    q("Zoom", "Zoomやオンラインイベントは？", "オンライン参加のしやすさを見ます。", IMG.laptopRobot, [
+    q("Zoom", "Zoomやオンラインイベントは？", "Zoomやオンライン参加について、今の状態に近いものを選んでください。", IMG.laptopRobot, [
       o("慣れている", { zoom:"得意", digital:"得意" }),
       o("基本操作はできる", { zoom:"基本操作OK", digital:"普通" }),
       o("少し苦手", { zoom:"初心者", digital:"サポート必要" }),
       o("かなり不安", { zoom:"初心者", digital:"サポート必要" })
     ]),
-    q("AI", "AIについて一番近いのは？", "AIを使えるかだけでなく、学びたいかも見ます。", IMG.laptopRobot, [
+    q("AI", "AIについて一番近いのは？", "AIとの関わり方について、今の状態に近いものを選んでください。", IMG.laptopRobot, [
       o("まだ使ったことがない", { ai:"未経験" }),
       o("興味があり学んでみたい", { ai:"興味あり・学びたい", purpose:"学び" }),
       o("少し使っている", { ai:"初級" }),
       o("仕事に活用している", { ai:"ビジネス活用中", digital:"得意" })
     ]),
-    q("活動状況", "今の活動状況は？", "ビジネスステージを見ます。", IMG.compass, [
+    q("活動状況", "今の活動状況は？", "今の活動状況に近いものを選んでください。", IMG.compass, [
       o("まず情報収集中", { businessStage:"模索中", stage:"発見" }),
       o("起業準備中", { businessStage:"準備中", stage:"形づくる" }),
       o("起業初期", { businessStage:"初期", stage:"広げる" }),
       o("すでに事業運営中", { businessStage:"成長期", stage:"つなげる" })
     ]),
-    q("立場", "あなたの立場は？", "現在の働き方や立場を見ます。", IMG.bear, [
+    q("立場", "あなたの立場は？", "今の立場に近いものを選んでください。", IMG.bear, [
       o("会社員", { businessStage:"模索中" }),
       o("個人事業主", { businessStage:"初期" }),
       o("経営者", { businessStage:"成長期" }),
       o("主婦・主夫・その他", { businessStage:"準備中" })
     ]),
-    q("時間", "今の時間の余裕は？", "動ける余白を見ます。", IMG.checkHeart, [
+    q("時間", "今の時間の余裕は？", "今の時間の余裕に近いものを選んでください。", IMG.checkHeart, [
       o("比較的余裕がある", { timeMargin:"多い" }),
       o("調整すれば作れる", { timeMargin:"普通" }),
       o("忙しい", { timeMargin:"少ない" }),
       o("とても忙しい", { timeMargin:"少ない" })
     ]),
-    q("参加時間", "参加しやすい時間帯は？", "複数ある場合は全部選んでください。", IMG.compass, [
+    q("参加時間", "参加しやすい時間帯は？", "参加しやすい時間帯が複数ある場合は、全部選んでください。", IMG.compass, [
       o("平日日中", { activeTime:"平日日中" }),
       o("平日夜", { activeTime:"平日夜" }),
       o("土日昼", { activeTime:"土日昼" }),
       o("土日夜", { activeTime:"土日夜" })
     ]),
-    q("行動傾向", "何かを始める時は？", "行動の始め方を見ます。", IMG.arrows, [
+    q("行動傾向", "何かを始める時は？", "新しいことを始める時の、いつもの動き方に近いものを選んでください。", IMG.arrows, [
       o("とりあえずやってみる", { stage:"広げる", interaction:"積極" }),
       o("調べてから動く", { stage:"発見", info:"文章" }),
       o("誰かに相談する", { stage:"形づくる", info:"対話" }),
       o("計画を立てる", { stage:"形づくる" })
     ]),
-    q("嬉しいこと", "コミュニティーで嬉しいのは？", "どんな価値を受け取りたいかを見ます。", IMG.sparkle, [
+    q("嬉しいこと", "コミュニティーで嬉しいのは？", "コミュニティーで得られたら嬉しいものを選んでください。", IMG.sparkle, [
       o("新しい出会い", { purpose:"人脈", interaction:"積極" }),
       o("学び", { purpose:"学び" }),
       o("仕事につながること", { purpose:"集客", stage:"広げる" }),
       o("信頼できる仲間", { purpose:"仲間づくり", interaction:"バランス" })
     ]),
-    q("相談方法", "困った時は？", "サポートの受け取り方を見ます。", IMG.question, [
+    q("相談方法", "困った時は？", "困った時の動き方に近いものを選んでください。", IMG.question, [
       o("自分で調べる", { info:"文章", digital:"普通" }),
       o("詳しい人に聞く", { info:"対話", purpose:"学び" }),
       o("仲間に相談する", { purpose:"仲間づくり", interaction:"バランス" }),
       o("個別相談を利用する", { stage:"形づくる", interaction:"慎重" })
     ]),
-    q("叶えたいこと", "今、一番叶えたいことは？", "今の優先テーマを見ます。", IMG.checkHeart, [
+    q("叶えたいこと", "今、一番叶えたいことは？", "今いちばん叶えたいことに近いものを選んでください。", IMG.checkHeart, [
       o("自分の方向性を見つけたい", { stage:"発見", purpose:"学び" }),
       o("商品やサービスを整えたい", { stage:"形づくる", purpose:"学び" }),
       o("集客や売上を伸ばしたい", { stage:"広げる", purpose:"集客" }),
       o("人とのつながりを広げたい", { stage:"つなげる", purpose:"人脈" })
     ]),
-    q("未来像", "1年後どうなっていたら嬉しい？", "目指したい未来を見ます。", IMG.sparkle, [
+    q("未来像", "1年後どうなっていたら嬉しい？", "1年後の理想に近いものを選んでください。", IMG.sparkle, [
       o("やりたいことが明確になっている", { stage:"発見" }),
       o("仕事として形になっている", { stage:"形づくる" }),
       o("安定して収益化できている", { stage:"広げる", purpose:"集客" }),
@@ -813,10 +864,11 @@
   function render() {
     const item = questions[current];
 
-    document.getElementById("questionVisual").src = current % 2 === 0 ? IMG.qHeader1 : IMG.qHeader2;
+    document.getElementById("questionVisual").src = IMG.questionImages[current] || IMG.qHeaderA;
+    document.getElementById("questionNumber").textContent = "Question " + (current + 1);
     document.getElementById("qCategory").innerHTML = '<img src="' + item.icon + '" alt="">' + esc(item.category);
     document.getElementById("qTitle").textContent = item.title;
-    document.getElementById("qHelp").textContent = item.help;
+    document.getElementById("qHelp").textContent = "";
     document.getElementById("progressText").textContent = (current + 1) + " / " + questions.length;
     document.getElementById("progressFill").style.width = ((current + 1) / questions.length * 100) + "%";
     document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "最後の入力へ" : "次へ";
@@ -963,14 +1015,14 @@
     }
 
     const name = document.getElementById("userName").value.trim();
-    const activity = document.getElementById("activityName").value.trim();
+    const activity = "";
     const advices = makeAdvices(result);
 
     document.getElementById("resultCard").innerHTML =
       '<img class="result-main-img" src="' + content.image + '" alt="' + esc(content.title) + '">' +
       '<div class="result-header">' +
         '<div class="result-title">あなたは今、<br>' + esc(content.title) + 'です</div>' +
-        '<div class="result-subtitle">' + esc(name ? name + "さん" : "診断結果") + (activity ? "｜" + esc(activity) : "") + '</div>' +
+        '<div class="result-subtitle">' + esc(name ? name + "さんの診断結果" : "診断結果") + '</div>' +
       '</div>' +
       section("🧭 今のあなたの現在地", IMG.compass, '<p>' + esc(content.body) + '</p><p><strong>おすすめの一歩：</strong><br>' + esc(content.step) + '</p>') +
       section("📋 LINKコンパスカルテ", IMG.checkHeart,
@@ -1005,7 +1057,7 @@
         '<summary>選択した項目すべてを見る</summary>' +
         '<div class="detail-log-body"><div class="list-text">' + selectedSummary(selectedRecords) + '</div></div>' +
       '</details>' +
-      section("🔒 メモ", IMG.lion, '<p style="font-size:12.5px;color:#666;">この診断結果は外部送信されません。共有したい場合は、上のコンパクトな結果カードをスクリーンショットしてください。</p>');
+      section("🔒 メモ", IMG.lion, '<p style="font-size:12.5px;color:#666;">画面をスクリーンショット or 診断結果をコピーして、LINEに貼ってください✨</p>');
 
     resultText = buildText(content, result, advices, freeRecords, name, activity);
     show(resultScreen);
@@ -1053,7 +1105,6 @@
     const lines = [];
     lines.push("🧭 LINKコンパス診断 結果");
     if (name) lines.push("お名前：" + name);
-    if (activity) lines.push("活動名：" + activity);
     lines.push("");
     lines.push("あなたは今、" + content.title + "です");
     lines.push(content.body);
