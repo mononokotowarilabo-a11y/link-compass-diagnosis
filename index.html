@@ -679,9 +679,9 @@
   };
 
   const questions = [
-    q("交流スタイル", "初めて参加するイベントでは？", "今のあなたに近いものを選んでください。複数選択OKです。", IMG.question, [
-      o("誰かに話しかけてもらえると安心", { interaction:"積極", stage:"広げる" }),
-      o("誰かに紹介してもらえると安心", { interaction:"慎重", referral:"慎重" }),
+    q("交流スタイル", "初めて参加するイベントでは？", "", IMG.question, [
+      o("気になる人がいたら自分から話しかける", { interaction:"積極", stage:"広げる" }),
+      o("誰かに話しかけてもらえると安心", { interaction:"慎重", referral:"慎重" }),
       o("まずは様子を見たい", { interaction:"慎重", stage:"発見" }),
       o("少人数なら話しやすい", { interaction:"バランス", purpose:"仲間づくり" })
     ]),
