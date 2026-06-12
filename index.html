@@ -667,7 +667,27 @@
     qHeaderB: "images/banner_qb.png",
     qHeaderC: "images/banner_qc.png",
     finalScreen: "images/final_screen.png",
-    questionImages: Array.from({ length: 18 }, (_, i) => `images/q${String(i + 1).padStart(2, "0")}.png`),
+    questionImages: [
+      "images/q01.png",
+      "images/q02.png",
+      "images/q03.png",
+      "images/q04.png",
+      "images/q05.png",
+      "images/q06.png",
+      "images/q07.png",
+      "images/q08.png",
+      "images/q09.png",
+      "images/q10.png",
+      "images/q10_activity_place.png",
+      "images/q11.png",
+      "images/q12.png",
+      "images/q13.png",
+      "images/q14.png",
+      "images/q15.png",
+      "images/q16.png",
+      "images/q17.png",
+      "images/q18.png"
+    ],
     checkHeart: "images/08_checklist_and_heart.png",
     qHeader2: "images/banner_qb.png",
     laptopRobot: "images/09_laptop_and_robot.png",
@@ -739,6 +759,12 @@
       o("起業初期", { businessStage:"初期", stage:"広げる" }),
       o("すでに事業運営中", { businessStage:"成長期", stage:"つなげる" })
     ]),
+    q("活動場所", "あなたの活動の場所は？", "", IMG.compass, [
+      o("オンライン重視で活動予定", { activityPlace:"オンライン重視", zoom:"基本操作OK", digital:"普通" }),
+      o("リアル重視で活動予定", { activityPlace:"リアル重視", interaction:"バランス" }),
+      o("オンライン＆リアル両方で活動予定", { activityPlace:"両方", zoom:"基本操作OK", digital:"普通", interaction:"積極" }),
+      o("まずは動画やアーカイブ活用してから", { activityPlace:"アーカイブ活用", interaction:"慎重", info:"ビジュアル" })
+    ]),
     q("立場", "あなたの立場は？", "今の立場に近いものを選んでください。", IMG.bear, [
       o("会社員", { businessStage:"模索中" }),
       o("個人事業主", { businessStage:"初期" }),
@@ -803,7 +829,8 @@
     digital: ["サポート必要", "普通", "得意"],
     timeMargin: ["少ない", "普通", "多い"],
     businessStage: ["模索中", "準備中", "初期", "成長期"],
-    activeTime: ["平日日中", "平日夜", "土日昼", "土日夜"]
+    activeTime: ["平日日中", "平日夜", "土日昼", "土日夜"],
+    activityPlace: ["オンライン重視", "リアル重視", "両方", "アーカイブ活用"]
   };
 
   const stageContent = {
@@ -1006,7 +1033,8 @@
       digital: primary(scores, "digital", "普通"),
       timeMargin: primary(scores, "timeMargin", "普通"),
       businessStage: primary(scores, "businessStage", "未判定"),
-      activeTime: timeList.length ? timeList.join("・") : "未判定"
+      activeTime: timeList.length ? timeList.join("・") : "未判定",
+      activityPlace: primary(scores, "activityPlace", "未判定")
     };
 
     const finalText = document.getElementById("finalFreeText").value.trim();
@@ -1036,6 +1064,7 @@
         item("デジタル活用度", result.digital, IMG.checkHeart) +
         item("時間の余裕", result.timeMargin, IMG.sparkle) +
         item("ビジネスステージ", result.businessStage, IMG.lion) +
+        item("活動の場所", result.activityPlace, IMG.laptopRobot) +
         item("活動しやすい時間帯", result.activeTime, IMG.compass) +
         '</div>'
       ) +
@@ -1045,6 +1074,7 @@
         timeList.map(x => '<span class="chip">' + esc(x) + '</span>').join("") +
         '<span class="chip">' + esc(result.info) + '型</span>' +
         '<span class="chip">' + esc(result.ai) + '</span>' +
+        '<span class="chip">活動の場所：' + esc(result.activityPlace) + '</span>' +
         '</div><div class="list-text">' + advices.map(x => "・" + esc(x)).join("<br>") + '</div>'
       ) +
       section("✅ 選択から見えたポイント", IMG.question,
@@ -1073,6 +1103,10 @@
     if (result.timeMargin === "少ない") advices.push("時間の余裕が少なめなので、まずは参加する企画を絞って、無理なく続けるのがおすすめです。");
     if (result.referral === "得意") advices.push("良いと思ったものを紹介する力があるので、マッチングや紹介役としても活躍しやすいです。");
     if (result.referral === "苦手") advices.push("紹介が苦手な場合は、まずは感想を一言伝えるところから始めると自然です。");
+    if (result.activityPlace === "オンライン重視") advices.push("オンライン中心の企画やZoom開催の場を活用すると、活動を広げやすそうです。");
+    if (result.activityPlace === "リアル重視") advices.push("リアルの交流会や対面で話せる場を活用すると、あなたらしさが伝わりやすそうです。");
+    if (result.activityPlace === "両方") advices.push("オンラインとリアルを組み合わせることで、出会いと継続の両方を広げやすそうです。");
+    if (result.activityPlace === "アーカイブ活用") advices.push("まずは動画やアーカイブで雰囲気をつかんでから、参加しやすい場を選ぶのが合いそうです。");
     if (!advices.length) advices.push("まずは気になる企画に参加して、自分に合う関わり方を試してみましょう。");
     return advices;
   }
@@ -1119,6 +1153,7 @@
     lines.push("デジタル活用度：" + result.digital);
     lines.push("時間の余裕：" + result.timeMargin);
     lines.push("ビジネスステージ：" + result.businessStage);
+    lines.push("活動の場所：" + result.activityPlace);
     lines.push("活動しやすい時間帯：" + result.activeTime);
     lines.push("");
     lines.push("【おすすめの一歩】");
