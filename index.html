@@ -683,6 +683,7 @@
       "images/q12.png",
       "images/q13.png",
       "images/q14.png",
+      "images/q15_decision_style.png",
       "images/q15.png",
       "images/q16.png",
       "images/q17.png",
@@ -789,6 +790,12 @@
       o("誰かに相談する", { stage:"形づくる", info:"対話" }),
       o("計画を立てる", { stage:"形づくる" })
     ]),
+    q("意思決定スタイル", "何か新しいことを始める時、決め手になりやすいのは？", "", IMG.checkHeart, [
+      o("「なんだか楽しそう！」と思えること", { decisionStyle:"フィーリング重視", emotionLogic:"感情タイプ" }),
+      o("信頼できる人からのおすすめ", { decisionStyle:"信頼・口コミ重視", emotionLogic:"感情タイプ", referral:"慎重" }),
+      o("メリットや効果が明確なこと", { decisionStyle:"メリット重視", emotionLogic:"ロジックタイプ" }),
+      o("データや実績で納得できること", { decisionStyle:"データ・実績重視", emotionLogic:"ロジックタイプ", info:"文章" })
+    ]),
     q("嬉しいこと", "コミュニティーで嬉しいのは？", "コミュニティーで得られたら嬉しいものを選んでください。", IMG.sparkle, [
       o("新しい出会い", { purpose:"人脈", interaction:"積極" }),
       o("学び", { purpose:"学び" }),
@@ -830,7 +837,9 @@
     timeMargin: ["少ない", "普通", "多い"],
     businessStage: ["模索中", "準備中", "初期", "成長期"],
     activeTime: ["平日日中", "平日夜", "土日昼", "土日夜"],
-    activityPlace: ["オンライン重視", "リアル重視", "両方", "アーカイブ活用"]
+    activityPlace: ["オンライン重視", "リアル重視", "両方", "アーカイブ活用"],
+    decisionStyle: ["フィーリング重視", "信頼・口コミ重視", "メリット重視", "データ・実績重視"],
+    emotionLogic: ["感情タイプ", "ロジックタイプ"]
   };
 
   const stageContent = {
@@ -1034,7 +1043,9 @@
       timeMargin: primary(scores, "timeMargin", "普通"),
       businessStage: primary(scores, "businessStage", "未判定"),
       activeTime: timeList.length ? timeList.join("・") : "未判定",
-      activityPlace: primary(scores, "activityPlace", "未判定")
+      activityPlace: primary(scores, "activityPlace", "未判定"),
+      decisionStyle: primary(scores, "decisionStyle", "未判定"),
+      emotionLogic: primary(scores, "emotionLogic", "未判定")
     };
 
     const finalText = document.getElementById("finalFreeText").value.trim();
@@ -1065,6 +1076,8 @@
         item("時間の余裕", result.timeMargin, IMG.sparkle) +
         item("ビジネスステージ", result.businessStage, IMG.lion) +
         item("活動の場所", result.activityPlace, IMG.laptopRobot) +
+        item("判断タイプ", result.emotionLogic, IMG.checkHeart) +
+        item("意思決定スタイル", result.decisionStyle, IMG.checkHeart) +
         item("活動しやすい時間帯", result.activeTime, IMG.compass) +
         '</div>'
       ) +
@@ -1075,6 +1088,7 @@
         '<span class="chip">' + esc(result.info) + '型</span>' +
         '<span class="chip">' + esc(result.ai) + '</span>' +
         '<span class="chip">活動の場所：' + esc(result.activityPlace) + '</span>' +
+        '<span class="chip">' + esc(result.emotionLogic) + '</span>' +
         '</div><div class="list-text">' + advices.map(x => "・" + esc(x)).join("<br>") + '</div>'
       ) +
       section("✅ 選択から見えたポイント", IMG.question,
@@ -1107,6 +1121,10 @@
     if (result.activityPlace === "リアル重視") advices.push("リアルの交流会や対面で話せる場を活用すると、あなたらしさが伝わりやすそうです。");
     if (result.activityPlace === "両方") advices.push("オンラインとリアルを組み合わせることで、出会いと継続の両方を広げやすそうです。");
     if (result.activityPlace === "アーカイブ活用") advices.push("まずは動画やアーカイブで雰囲気をつかんでから、参加しやすい場を選ぶのが合いそうです。");
+    if (result.emotionLogic === "感情タイプ") advices.push("何かを選ぶ時は、楽しさや共感が大切なタイプです。気持ちが動く場や人との相性を大事にすると動きやすそうです。");
+    if (result.emotionLogic === "ロジックタイプ") advices.push("何かを選ぶ時は、納得感や根拠が大切なタイプです。メリットや実績が見える場だと安心して進めそうです。");
+    if (result.decisionStyle === "信頼・口コミ重視") advices.push("信頼できる人の声が行動の後押しになりやすいので、安心して相談できる相手を活用すると良さそうです。");
+    if (result.decisionStyle === "データ・実績重視") advices.push("数字や事例で確認できると動きやすいタイプです。実績紹介や比較情報を集めると判断しやすくなります。");
     if (!advices.length) advices.push("まずは気になる企画に参加して、自分に合う関わり方を試してみましょう。");
     return advices;
   }
@@ -1154,6 +1172,8 @@
     lines.push("時間の余裕：" + result.timeMargin);
     lines.push("ビジネスステージ：" + result.businessStage);
     lines.push("活動の場所：" + result.activityPlace);
+    lines.push("判断タイプ：" + result.emotionLogic);
+    lines.push("意思決定スタイル：" + result.decisionStyle);
     lines.push("活動しやすい時間帯：" + result.activeTime);
     lines.push("");
     lines.push("【おすすめの一歩】");
